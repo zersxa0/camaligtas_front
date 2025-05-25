@@ -1,3 +1,4 @@
+
 @extends('layouts.app')
 
 @section('hideSidebar', true)
@@ -5,6 +6,7 @@
 @php
     // Prevent undefined variable error if $alerts is not passed
     $alerts = $alerts ?? collect();
+    $today = $today ?? \Carbon\Carbon::now()->format('Y-m-d');
 @endphp
 
 @section('content')
@@ -58,8 +60,19 @@
             <div class="card mb-4 flex-grow-1" style="min-height: 300px; max-height: 350px;">
                 <div class="card-header fw-bold">Active Alerts</div>
                 <div class="card-body p-2" style="overflow-y: auto; max-height: 250px;">
+                    {{-- Debug output to help you see what is being compared --}}
+                    @foreach($alerts as $alert)
+                        <div style="font-size:12px;color:#888;">
+                            Alert: {{ $alert->title }} | data-date: {{ \Carbon\Carbon::parse($alert->date)->format('Y-m-d') }} | $today: {{ $today }} | active: {{ $alert->active }}
+                        </div>
+                    @endforeach
                     @forelse($alerts as $alert)
-                        <div class="mb-2 border-bottom pb-2">
+                        <div class="mb-2 border-bottom pb-2 disaster-alert"
+                             data-title="{{ $alert->title }}"
+                             data-description="{{ $alert->description }}"
+                             data-hazard="{{ $alert->hazard_type }}"
+                             data-level="{{ $alert->level }}"
+                             data-date="{{ \Carbon\Carbon::parse($alert->date)->format('Y-m-d') }}">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
                                     <span class="fw-bold">{{ $alert->title }}</span>
@@ -115,3 +128,37 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+function playBeep() {
+    var beep = new Audio('https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg');
+    beep.play();
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const today = "{{ $today }}";
+    let found = false;
+    document.querySelectorAll('.disaster-alert').forEach(function(alertDiv) {
+        const alertDate = alertDiv.getAttribute('data-date');
+        // Compare only the date part (alertDate is already Y-m-d)
+        if (alertDate === today && !found) {
+            found = true;
+            playBeep();
+            const title = alertDiv.getAttribute('data-title');
+            const desc = alertDiv.getAttribute('data-description');
+            const hazard = alertDiv.getAttribute('data-hazard');
+            const level = alertDiv.getAttribute('data-level');
+            setTimeout(function() {
+                alert(
+                    "ALERT: " + title + "\n" +
+                    "Hazard: " + hazard + "\n" +
+                    "Level: " + level + "\n" +
+                    "Description: " + desc
+                );
+            }, 500);
+        }
+    });
+});
+</script>
+@endpush

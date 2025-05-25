@@ -8,7 +8,7 @@
     <link href="https://fonts.googleapis.com/css?family=Lobster&display=swap" rel="stylesheet">
     <style>
         body {
-            background: #e9ecef; /* simple gray */
+            background: rgb(248, 248, 248);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -26,10 +26,10 @@
             margin-top: -80px;
         }
         .title-camaligtas .camalig {
-            color: #e53935; /* red */
+            color: #e53935;
         }
         .title-camaligtas .tas {
-            color: #43a047; /* green */
+            color: #43a047;
         }
         .login-container {
             background: #fff;
@@ -65,7 +65,7 @@
             box-shadow: 0 0 0 0.2rem rgba(229,57,53,0.10);
         }
         .btn-login {
-            background: linear-gradient(90deg, #e53935 0%, #fff 100%);
+            background: rgb(175, 62, 60);
             border: none;
             border-radius: 12px;
             padding: 0.75rem 1.5rem;
@@ -79,8 +79,8 @@
             box-shadow: 0 2px 8px rgba(229,57,53,0.10);
         }
         .btn-login:hover {
-            background: linear-gradient(90deg, #b71c1c 0%, #fff 100%);
-            color: #e53935;
+            background: rgb(124, 36, 35);
+            color:rgb(255, 255, 255);
         }
         .role-dropdown {
             margin-bottom: 1.2rem;
@@ -111,58 +111,55 @@
     </style>
 </head>
 <body>
-    <!-- Title outside the form -->
     <div class="title-camaligtas"><br>
         <span class="camalig">Camalig</span><span class="tas">tas</span>
     </div>
     <div class="login-container my-3">
-        <!-- Login Header inside the form -->
         <div class="login-header">
             <h2>Login</h2>
-            <p class="mb-0" style="font-size: 1rem; color: #888;">Disaster Risk Dashboard</p>
+            <p class="mb-0" style="font-size: 1rem; color: #888;">Sign In to your account</p>
         </div>
-        <!-- Login Form -->
         @if(session('error'))
             <div class="alert alert-danger">
                 <i class="fas fa-exclamation-triangle me-2"></i>
                 {{ session('error') }}
             </div>
         @endif
-
         @if(session('success'))
             <div class="alert alert-success">
                 <i class="fas fa-check-circle me-2"></i>
                 {{ session('success') }}
             </div>
         @endif
-
-        <form method="POST" action="{{ route('login') }}" id="loginForm" onsubmit="return customLogin(event)">
+        @if($errors->any())
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                @foreach($errors->all() as $error)
+                    {{ $error }}<br>
+                @endforeach
+            </div>
+        @endif
+        <form method="POST" action="{{ route('login') }}" id="loginForm" onsubmit="return handleLogin(event)">
             @csrf
-
-            <!-- Role Dropdown -->
             <div class="role-dropdown">
                 <label for="roleSelect" class="form-label"><i class="fas fa-user-tag me-2"></i>Select Role</label>
-                <select class="form-select" id="roleSelect" name="role" required onchange="toggleSignupLink()">
+                <select class="form-select" id="roleSelect" name="role" required>
                     <option value="" selected disabled>Select your role</option>
-                    <option value="superadmin">Super Admin</option>
-                    <option value="admin">Admin</option>
-                    <option value="user">User</option>
+                    <option value="superadmin" {{ old('role') === 'superadmin' ? 'selected' : '' }}>Super Admin</option>
+                    <option value="admin" {{ old('role') === 'admin' ? 'selected' : '' }}>Admin</option>
+                    <option value="user" {{ old('role') === 'user' ? 'selected' : '' }}>User</option>
                 </select>
             </div>
-            
-            <!-- Username -->
             <div class="form-floating">
                 <input type="text" class="form-control @error('username') is-invalid @enderror" 
                        id="username" name="username" placeholder="Username" value="{{ old('username') }}" required>
                 <label for="username">
-                    <i class="fas fa-user me-2"></i>Username
+                    <i class="fas fa-user me-2"></i>Username or Email
                 </label>
                 @error('username')
                     <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
             </div>
-            
-            <!-- Password -->
             <div class="form-floating">
                 <input type="password" class="form-control @error('password') is-invalid @enderror" 
                        id="password" name="password" placeholder="Password" required>
@@ -173,68 +170,63 @@
                     <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
             </div>
-            
-            <!-- Remember Me -->
             <div class="form-check mb-3">
                 <input class="form-check-input" type="checkbox" name="remember" id="remember">
                 <label class="form-check-label" for="remember">
                     Remember me for 30 days
                 </label>
             </div>
-            
-            <!-- Login Button -->
             <button type="submit" class="btn btn-login" id="loginBtn">
                 <i class="fas fa-sign-in-alt me-2"></i> Access Dashboard
             </button>
-            
         </form>
-        
-        <!-- Sign Up Link for User -->
-        <div class="signup-link" id="signupLink" style="display:none;">
-            <span>Don't have an account? <a href="{{ route('register') }}">Sign up here</a></span>
-        </div>
-        
-        <!-- Footer -->
         <div class="footer-text">
             <i class="fas fa-info-circle me-1"></i>
             Emergency Hotline: <strong>911</strong> | Barangay Office: <strong>(052) XXX-XXXX</strong>
             <br><small class="text-muted">© 2025 Barangay Ilawod Emergency Management System</small>
         </div>
     </div>
-    
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        function toggleSignupLink() {
-            const role = document.getElementById('roleSelect').value;
-            document.getElementById('signupLink').style.display = (role === 'user') ? 'block' : 'none';
-        }
+function handleLogin(event) {
+    const role = document.getElementById('roleSelect').value;
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value;
 
-        // Custom login for demo
-        function customLogin(e) {
-            e.preventDefault();
-            const username = document.getElementById('username').value.trim();
-            const password = document.getElementById('password').value;
-            const role = document.getElementById('roleSelect').value;
+    // Superadmin
+    if (role === 'superadmin' && username === 'superadmin@gmail.com' && password === 'superadmin123') {
+        event.preventDefault();
+        document.getElementById('loginBtn').innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Accessing Dashboard...';
+        setTimeout(() => {
+            window.location.href = '/superadmin/manage_users';
+        }, 1000);
+        return false;
+    }
 
-            if (role === 'superadmin' && username === 'superadmin@gmail.com' && password === 'adminpass') {
-                window.location.href = "{{ route('hazard.home') }}";
-                return false;
-            }
-            if (role === 'admin' && username === 'admin@gmail.com' && password === 'adminpass') {
-                window.location.href = "{{ route('hazard.home') }}";
-                return false;
-            }
-            if (role === 'user' && username === 'sarah@gmail.com' && password === '123') {
-                window.location.href = "/user/user-dashboard";
-                return false;
-            }
-            if (role === 'user') {
-                alert('Please sign up if you do not have an account, or log in if you already have one.');
-                return false;
-            }
-            alert('Invalid credentials. Try the correct email and password for your role.');
-            return false;
-        }
-    </script>
+    // Admin
+    if (role === 'admin' && username === 'admin@gmail.com' && password === 'admin123') {
+        event.preventDefault();
+        document.getElementById('loginBtn').innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Accessing Dashboard...';
+        setTimeout(() => {
+            window.location.href = '/admin/dashboard';
+        }, 1000);
+        return false;
+    }
+
+    // User
+    if (role === 'user' && username === 'sarah@gmail.com' && password === 'sarah123') {
+        event.preventDefault();
+        document.getElementById('loginBtn').innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Accessing Dashboard...';
+        setTimeout(() => {
+            window.location.href = '/user/dashboard';
+        }, 1000);
+        return false;
+    }
+
+    // For all other credentials, allow normal form submission (if you want)
+    return true;
+}
+</script>
 </body>
 </html>

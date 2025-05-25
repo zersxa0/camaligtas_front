@@ -1,4 +1,3 @@
-
 @extends('layouts.app')
 
 @section('hideSidebar', true)
@@ -25,6 +24,7 @@
         </div>
         <div class="col-md-4 text-end">
             <button class="btn btn-primary mt-4" onclick="openCoordinatorModal('add')">Add Coordinator</button>
+            <button class="btn btn-success mt-4 ms-2" onclick="openCenterModal()">Add Center</button>
         </div>
     </div>
 
@@ -124,6 +124,57 @@
   </div>
 </div>
 
+<!-- Add Center Modal -->
+<div class="modal fade" id="centerModal" tabindex="-1" aria-labelledby="centerModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form id="centerForm">
+        <div class="modal-header">
+          <h5 class="modal-title" id="centerModalLabel">Add Evacuation Center</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <div class="mb-3">
+                <label for="centerName" class="form-label">Center Name</label>
+                <input type="text" class="form-control" id="centerName" name="centerName" required>
+            </div>
+            <div class="mb-3">
+                <label for="centerPurok" class="form-label">Purok</label>
+                <select class="form-select" id="centerPurok" name="centerPurok" required>
+                    <option value="" disabled selected>Select Purok</option>
+                    <option value="1">Purok 1</option>
+                    <option value="2">Purok 2</option>
+                    <option value="3">Purok 3</option>
+                    <option value="4">Purok 4</option>
+                    <option value="5">Purok 5</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="centerStatus" class="form-label">Status</label>
+                <select class="form-select" id="centerStatus" name="centerStatus" required>
+                    <option value="open">Open</option>
+                    <option value="full">Full</option>
+                    <option value="closed">Closed</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="centerCoordinator" class="form-label">Coordinator</label>
+                <input type="text" class="form-control" id="centerCoordinator" name="centerCoordinator" required>
+            </div>
+            <div class="mb-3">
+                <label for="centerContact" class="form-label">Contact Number</label>
+                <input type="text" class="form-control" id="centerContact" name="centerContact" required>
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-success">Add Center</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
 @push('scripts')
 <script>
 let editingRow = null;
@@ -190,6 +241,49 @@ function openCoordinatorModal(action, btn = null) {
     }
     modal.show();
 }
+
+// Add Center Modal logic
+function openCenterModal() {
+    const modal = new bootstrap.Modal(document.getElementById('centerModal'));
+    document.getElementById('centerForm').reset();
+    modal.show();
+}
+
+// Handle Add Center form submission
+document.getElementById('centerForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const name = document.getElementById('centerName').value;
+    const purok = document.getElementById('centerPurok').value;
+    const status = document.getElementById('centerStatus').value;
+    const coordinator = document.getElementById('centerCoordinator').value;
+    const contact = document.getElementById('centerContact').value;
+
+    // Add new row to table
+    const tbody = document.querySelector('#centersTable tbody');
+    const tr = document.createElement('tr');
+    tr.setAttribute('data-purok', purok);
+    tr.setAttribute('data-contact', contact);
+    tr.innerHTML = `
+        <td>${name}</td>
+        <td>Purok ${purok}</td>
+        <td>
+            <select class="form-select form-select-sm" onchange="setStatus(this)">
+                <option value="open"${status === 'open' ? ' selected' : ''}>Open</option>
+                <option value="full"${status === 'full' ? ' selected' : ''}>Full</option>
+                <option value="closed"${status === 'closed' ? ' selected' : ''}>Closed</option>
+            </select>
+        </td>
+        <td>${coordinator}</td>
+        <td>
+            <button class="btn btn-sm btn-secondary" onclick="openCoordinatorModal('edit', this)">Edit</button>
+            <button class="btn btn-sm btn-danger" onclick="openCoordinatorModal('delete', this)">Delete</button>
+        </td>
+    `;
+    tbody.appendChild(tr);
+
+    // Hide modal
+    bootstrap.Modal.getInstance(document.getElementById('centerModal')).hide();
+});
 
 // Prevent form submission for demo
 document.getElementById('coordinatorForm').addEventListener('submit', function(e) {

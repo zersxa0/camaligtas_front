@@ -11,11 +11,28 @@ class AuthController extends Controller
         return view('auth.login');
     }
 
+    public function showLoginForm()
+    {
+        return view('auth.login');
+    }
+
     public function login(Request $request)
     {
-        // Add your authentication logic here
-        // For demo, just redirect to admin dashboard
-        return redirect()->route('admin.dashboard');
+        // Demo authentication logic
+        $email = $request->input('email');
+        $password = $request->input('password');
+
+        // You can replace this with real authentication logic
+        if ($email === 'superadmin@gmail.com' && $password === 'superadmin123') {
+            return redirect()->route('superadmin.manage_users');
+        } elseif ($email === 'admin@gmail.com' && $password === 'admin123') {
+            return redirect()->route('admin.dashboard');
+        } elseif ($email === 'sarah@gmail.com' && $password === 'sarah123') {
+            return redirect()->route('user.dashboard');
+        } else {
+            // Default: redirect back with error
+            return redirect()->back()->withErrors(['Invalid credentials.']);
+        }
     }
 
     public function logout(Request $request)
