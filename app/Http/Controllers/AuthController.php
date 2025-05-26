@@ -16,24 +16,29 @@ class AuthController extends Controller
         return view('auth.login');
     }
 
-    public function login(Request $request)
-    {
-        // Demo authentication logic
-        $email = $request->input('email');
-        $password = $request->input('password');
+public function login(Request $request)
+{
+    $role = $request->input('role');
+    $username = $request->input('username');
+    $password = $request->input('password');
 
-        // You can replace this with real authentication logic
-        if ($email === 'superadmin@gmail.com' && $password === 'superadmin123') {
-            return redirect()->route('superadmin.manage_users');
-        } elseif ($email === 'admin@gmail.com' && $password === 'admin123') {
-            return redirect()->route('admin.dashboard');
-        } elseif ($email === 'sarah@gmail.com' && $password === 'sarah123') {
+    // Superadmin
+    if ($role === 'superadmin' && $username === 'superadmin@gmail.com' && $password === 'superadmin123') {
+        return redirect()->route('superadmin.manage_users');
+    }
+    // Admin
+    if ($role === 'admin' && $username === 'admin@gmail.com' && $password === 'admin123') {
+        return redirect()->route('admin.dashboard');
+    }
+    // User (passcode-based demo)
+    if ($role === 'user') {
+        $user = session('registered_user');
+        if ($user && $username === $user['name'] && $password === $user['passcode']) {
             return redirect()->route('user.dashboard');
-        } else {
-            // Default: redirect back with error
-            return redirect()->back()->withErrors(['Invalid credentials.']);
         }
     }
+    return redirect()->back()->withErrors(['Invalid credentials.']);
+}
 
     public function logout(Request $request)
     {
@@ -52,4 +57,11 @@ class AuthController extends Controller
         // Add your registration logic here
         return redirect()->route('login');
     }
+    // app/Http/Controllers/AuthController.php
+
+public function showRegisterForm()
+{
+    return view('auth.register'); // Make sure this Blade file exists in resources/views/auth/register.blade.php
+}
+
 }

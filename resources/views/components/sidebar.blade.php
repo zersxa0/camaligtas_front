@@ -131,13 +131,14 @@
         </h2>
         <div id="collapseInfo" class="accordion-collapse collapse">
             <div class="accordion-body text-white">
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="infoLegend">
-                    <label class="form-check-label" for="infoLegend">Risk Level Legend</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="infoTypes">
-                    <label class="form-check-label" for="infoTypes">Disaster Types</label>
+                <div class="mb-3">
+                    <label for="riskLevelSelect" class="form-label">Risk Level Legend</label>
+                    <select class="form-select bg-dark text-white" id="riskLevelSelect">
+                        <option value="no">No Risk</option>
+                        <option value="moderate">Moderate Risk</option>
+                        <option value="high">High Risk</option>
+                        <option value="extreme">Extreme Risk</option>
+                    </select>
                 </div>
             </div>
         </div>

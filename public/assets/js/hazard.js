@@ -8,6 +8,8 @@ let legendControl;
 let riversLayer = {};
 let landmarksLayer = {};
 let mainMarker;
+let editableLayers;
+let drawControl;
 
 // Initialize map when DOM is loaded
 document.addEventListener("DOMContentLoaded", function () {
@@ -29,6 +31,39 @@ function initializeMap() {
         .addTo(map)
         .bindPopup("Barangay Ilawod, Camalig, Albay")
         .openPopup();
+
+    // Initialize editable layers
+    editableLayers = new L.FeatureGroup();
+    map.addLayer(editableLayers);
+
+    // Initialize draw control
+    drawControl = new L.Control.Draw({
+        draw: {
+            polygon: true,
+            polyline: true,
+            rectangle: true,
+            circle: true,
+            marker: true
+        },
+        edit: {
+            featureGroup: editableLayers,
+            remove: true
+        }
+    });
+    map.addControl(drawControl);
+
+    // Handle draw events
+    map.on('draw:created', function(e) {
+        let layer = e.layer;
+        editableLayers.addLayer(layer);
+    });
+
+    map.on('draw:deleted', function(e) {
+        let layers = e.layers;
+        layers.eachLayer(function(layer) {
+            editableLayers.removeLayer(layer);
+        });
+    });
 
     // Initialize legend control
     legendControl = L.control({position: 'bottomright'});
@@ -463,6 +498,36 @@ function updateSidebarLegend() {
     }
     
     legendContainer.innerHTML = legendContent;
+}
+
+// Update risk level colors based on selection
+document.addEventListener('DOMContentLoaded', function() {
+    const riskLevelSelect = document.getElementById('riskLevelSelect');
+    if (riskLevelSelect) {
+        riskLevelSelect.addEventListener('change', function(e) {
+            const riskLevel = e.target.value;
+            const colors = {
+                'no': '#00ff00',
+                'moderate': '#ffff00',
+                'high': '#ff9900',
+                'extreme': '#ff0000'
+            };
+            
+            updateRiskLevelColors(colors[riskLevel]);
+        });
+    }
+});
+
+function updateRiskLevelColors(color) {
+    // Update the colors of relevant layers based on risk level
+    editableLayers.eachLayer(function(layer) {
+        if (layer instanceof L.Polygon) {
+            layer.setStyle({
+                fillColor: color,
+                fillOpacity: 0.4
+            });
+        }
+    });
 }
 
 // Update main marker position based on selected purok
