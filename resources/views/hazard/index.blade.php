@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('hideNavbarIcons', true)
+
 @section('content')
 <div class="container-fluid">
     <h4 class="mb-3">Barangay Hazard Map</h4>

@@ -1,5 +1,7 @@
 
 @extends('layouts.app')
+@section('hideSidebar', true)
+@section('hideNavbarLinks', true)
 
 @section('content')
 <div class="container mt-5">

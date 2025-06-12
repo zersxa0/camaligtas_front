@@ -1,61 +1,203 @@
+<style>
+    .compact-navbar {
+        padding-top: 0.2rem !important;
+        padding-bottom: 0.2rem !important;
+        min-height: 48px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* subtle shadow */
+        width: 100%;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1030;
+    }
 
-<nav class="navbar navbar-dark fixed-top py-0" style="background-color:rgb(2, 141, 255);">
+    .compact-navbar .navbar-brand img {
+        width: 30px;
+        height: auto;
+    }
+
+    .compact-navbar .navbar-brand span {
+        font-size: 1.5rem;
+    }
+
+    .compact-navbar .nav-link {
+        font-size: 0.875rem;
+        padding: 0.25rem 0.5rem;
+        text-align: center;
+    }
+
+    .compact-navbar .btn {
+        padding: 0.2rem 0.5rem;
+        font-size: 1rem;
+    }
+
+    .compact-navbar ul.navbar-nav {
+        gap: 2.5rem !important;
+    }
+
+    /* Center navigation items */
+    .center-nav {
+        display: flex;
+        align-items: center;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .center-nav .nav-item {
+        white-space: nowrap;
+    }
+
+    /* Adjust logo and brand positioning */
+    .compact-navbar .navbar-brand {
+        margin-left: 0;
+        display: flex;
+        align-items: center;
+    }
+
+    /* Remove explicit width for side-nav-space as flex will handle spacing */
+    .compact-navbar .side-nav-space {
+        width: auto;
+        margin-right: auto;
+    }
+
+    /* Responsive Styles */
+    @media (max-width: 1400px) {
+        .compact-navbar ul.navbar-nav {
+            gap: 1.5rem !important;
+        }
+        .compact-navbar .nav-link {
+            font-size: 0.85rem;
+        }
+    }
+
+    @media (max-width: 1200px) {
+        .compact-navbar ul.navbar-nav {
+            gap: 1rem !important;
+        }
+    }
+
+    /* Hide entire navbar on screens smaller than large (lg) breakpoint */
+    /* REMOVED: @media (max-width: 991.98px) { .compact-navbar { display: none !important; } } */
+
+    @media (max-width: 768px) {
+        .compact-navbar .navbar-brand span {
+            font-size: 1.2rem;
+        }
+        .compact-navbar .navbar-brand img {
+            width: 25px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .compact-navbar {
+            padding: 0.3rem 0.5rem !important;
+        }
+        .compact-navbar .navbar-brand {
+            margin-left: 0.5rem;
+        }
+        .compact-navbar .navbar-brand span {
+            font-size: 1rem;
+        }
+        .compact-navbar .navbar-brand img {
+            width: 20px;
+        }
+        .compact-navbar .navbar-toggler {
+            padding: 0.25rem;
+        }
+        .container-fluid {
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+    }
+
+    /* Prevent horizontal scroll */
+    body {
+        overflow-x: hidden;
+        width: 100%;
+    }
+
+    .container-fluid {
+        padding-left: 15px;
+        padding-right: 15px;
+        max-width: 100%;
+    }
+</style>
+
+<nav class="navbar navbar-dark fixed-top shadow-sm compact-navbar" style="background-color:rgb(247, 247, 247);">
     <div class="container-fluid d-flex align-items-center justify-content-between">
-        <!-- Left: Hamburger + Logo + Title + Main Nav Links -->
+        <!-- Left: Logo + Brand -->
         <div class="d-flex align-items-center">
-            @hasSection('hideSidebar')
-                {{-- Hide burger icon --}}
-            @else
-                <button class="btn btn-outline-light me-2" id="toggleSidebar" style="font-size: 20px;">
-                    &#9776;
-                </button>
-            @endif
-            <a class="navbar-brand d-flex align-items-center" href="#">
-                <img src="{{ asset('assets/img/logo_camalig.png') }}" width="40" class="me-2" alt="Logo">
-                <span style="font-family: 'Lobster', cursive; font-size: 2rem;">
-                    <span style="color: #e53935;">Camalig</span><span style="color: #43a047;">tas</span>
+            <a class="navbar-brand d-flex align-items-center" href="{{ route('superadmin.manage_users') }}">
+                <img src="{{ asset('assets/img/logo_camalig.png') }}" class="me-2" alt="Logo">
+                <span style="font-family: 'Lobster', cursive;">
+                    <span style="color:rgb(252, 122, 46);">Camalig</span><span style="color:rgb(12, 207, 22);">tas</span>
                 </span>
             </a>
+        </div>
+
+        <!-- Navigation Links: Hidden on small screens, visible on large screens -->
+        <div class="center-nav d-none d-lg-flex">
             @if (!View::hasSection('hideNavbarLinks'))
-            <ul class="navbar-nav flex-row gap-5 align-items-center mb-0" style="margin-left: 5rem;">
+            <ul class="navbar-nav flex-row align-items-center mb-0">
                 <li class="nav-item">
-                    <a class="nav-link text-white" href="{{ route('home') }}">Home</a>
+                    <a class="nav-link text-dark" href="{{ route('home') }}">
+                        <i class="fas fa-home me-1"></i>Home
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-white" href="{{ route('hazard.map') }}">Barangay Hazard Map</a>
+                    <a class="nav-link text-dark" href="{{ route('hazard.map') }}">
+                        <i class="fas fa-map-marked-alt me-1"></i>Barangay Hazard Map
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-white" href="{{ route('risk.analysis') }}">Risk Analysis</a>
+                    <a class="nav-link text-dark" href="{{ route('risk.analysis') }}">
+                        <i class="fas fa-chart-line me-1"></i>Risk Analysis
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-white" href="{{ route('alerts') }}">Alerts</a>
+                    <a class="nav-link text-dark" href="{{ route('alerts') }}">
+                        <i class="fas fa-bell me-1"></i>Alerts
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-white" href="{{ route('sms') }}">SMS</a>
+                    <a class="nav-link text-dark" href="{{ route('sms') }}">
+                        <i class="fas fa-sms me-1"></i>SMS
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-white" href="{{ route('contacts') }}">Contacts</a>
+                    <a class="nav-link text-dark" href="{{ route('contacts') }}">
+                        <i class="fas fa-address-book me-1"></i>Contacts
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-white" href="{{ route('evacuation') }}">Evacuation</a>
+                    <a class="nav-link text-dark" href="{{ route('evacuation') }}">
+                        <i class="fas fa-running me-1"></i>Evacuation
+                    </a>
                 </li>
             </ul>
             @endif
         </div>
+
         <!-- Right: Profile + Logout -->
         <div class="d-flex align-items-center">
-            <ul class="navbar-nav flex-row gap-4 align-items-center mb-0">
-                <!-- Manage Profile Icon -->
+            <ul class="navbar-nav flex-row align-items-center mb-0 gap-3">
+                @if(request()->route()->getName() == 'superadmin.manage_users')
                 <li class="nav-item">
-                    <a class="nav-link text-white d-flex align-items-center" href="{{ route('hazard.profile') }}" title="Manage Profile">
+                    <a class="nav-link text-dark d-flex align-items-center" href="{{ route('dashboard') }}" title="Go to Dashboard">
+                        <i class="fas fa-home"></i>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-dark d-flex align-items-center" href="{{ route('hazard.profile') }}" title="Manage Profile">
                         <i class="fas fa-user-circle fa-lg"></i>
                     </a>
                 </li>
-                <!-- Logout Icon -->
+                @endif
                 <li class="nav-item">
                     <form id="logoutForm" action="{{ route('logout') }}" method="POST" style="display:inline;">
                         @csrf
-                        <button type="submit" class="btn btn-link nav-link text-white p-0" title="Logout">
+                        <button type="submit" class="btn btn-link nav-link text-dark p-0" title="Logout">
                             <i class="fas fa-sign-out-alt fa-lg"></i>
                         </button>
                     </form>
