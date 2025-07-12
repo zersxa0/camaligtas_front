@@ -17,6 +17,10 @@ Route::get('/forgot_password', function () {
     return view('auth.forgot_password');
 })->name('forgot_password');
 
+// Registration and OTP routes
+Route::view('register', 'auth.register');
+
+
 Route::get('/home', function () {
     return view('hazard.home');
 })->name('home');

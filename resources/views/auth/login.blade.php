@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -215,6 +216,9 @@
 
         <div class="signup-link">
             <a href="{{ url('forgot_password') }}" style="color: #e53935; text-decoration: underline; font-size: 0.95rem;">Forgot Password?</a>
+        </div>
+        <div class="signup-link mt-2">
+            <a href="{{ url('register') }}" style="color: #4caf50; text-decoration: underline; font-size: 0.95rem;">Register as User</a>
         </div>
     </div>
 
